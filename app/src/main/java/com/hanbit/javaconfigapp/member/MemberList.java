@@ -41,11 +41,11 @@ public class MemberList extends AppCompatActivity {
         ui.addView(listView);
         setContentView(ui);
 
-        final MemList memberList=new MemList(context);
+        final ListDAO dao=new ListDAO(context);
         IList service=new IList() {
             @Override
             public List<?> list() {
-                return memberList.list("select _id AS id, name, phone, age, address, salary from member;");
+                return dao.list("select _id AS id, name, phone, age, address, salary from member;");
             }
         };
         final ArrayList<Map<String,String>> memberMap= (ArrayList<Map<String, String>>) service.list();
@@ -65,8 +65,8 @@ public class MemberList extends AppCompatActivity {
             }
         });
     }
-    class MemList extends ListQuery {
-        public MemList(Context context) {
+    class ListDAO extends ListQuery {
+        public ListDAO(Context context) {
             super(context);
         }
 

@@ -19,6 +19,7 @@ import com.hanbit.javaconfigapp.factory.DetailQuery;
 import com.hanbit.javaconfigapp.factory.LayoutParamsFactory;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class MemberDetail extends AppCompatActivity {
@@ -177,14 +178,21 @@ public class MemberDetail extends AppCompatActivity {
         uiButton5.addView(btUpdate);
         ui.addView(uiButton5);
 
-        final MemDetail memDetail=new MemDetail(context);
+        final DetailDAO dao=new DetailDAO(context);
         IDetail service=new IDetail() {
             @Override
-            public Map<String,String> detail(Object o) {
-                return memDetail.detail("select _id AS id,name,phone,age,address,salary from member where _id='"+(String)o+"';");
+            public Map<String,String> detail() {
+                return dao.detail("select _id AS id,name,phone,age,address,salary from member where _id='"+id+"';");
             }
         };
-        Map<String,String>rsMap= (Map<String,String>)service.detail(id);
+        Map<String,String>rsMap= (Map<String,String>)service.detail();
+        String temp="";
+        Iterator<Map.Entry<String,String>>it=rsMap.entrySet().iterator();
+        while (it.hasNext()){
+           Map.Entry<String,String>entry=it.next();
+           temp+=entry.getKey()+","+entry.getValue()+",";
+        }
+        final String spec=temp;
 
         tvIdContent.setText(rsMap.get("id"));
         tvNameContent.setText(rsMap.get("name"));
@@ -213,13 +221,13 @@ public class MemberDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context, MemberUpdate.class);
-                intent.putExtra("id",id);
+                intent.putExtra("spec",spec);
                 startActivity(intent);
             }
         });
     }
-    class MemDetail extends DetailQuery {
-        public MemDetail(Context context) {
+    class DetailDAO extends DetailQuery {
+        public DetailDAO(Context context) {
             super(context);
         }
         @Override

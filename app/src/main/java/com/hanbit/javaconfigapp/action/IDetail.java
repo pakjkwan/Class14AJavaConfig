@@ -7,5 +7,5 @@ import java.util.Map;
  */
 
 public interface IDetail {
-    public Map<?,?> detail(Object o);
+    public Map<?,?> detail();
 }
