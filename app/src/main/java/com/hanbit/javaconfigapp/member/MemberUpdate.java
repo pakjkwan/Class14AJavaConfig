@@ -12,11 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.hanbit.javaconfigapp.action.IUpdate;
 import com.hanbit.javaconfigapp.factory.LayoutParamsFactory;
 import com.hanbit.javaconfigapp.factory.WriteQuery;
-
 import java.util.HashMap;
 import java.util.Map;
 

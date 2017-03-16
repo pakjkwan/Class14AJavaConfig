@@ -1,11 +1,13 @@
 package com.hanbit.javaconfigapp.member;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -19,7 +21,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hanbit.javaconfigapp.R;
+import com.hanbit.javaconfigapp.action.IDelete;
 import com.hanbit.javaconfigapp.action.IList;
+import com.hanbit.javaconfigapp.factory.Composite;
+import com.hanbit.javaconfigapp.factory.DeleteQuery;
 import com.hanbit.javaconfigapp.factory.LayoutParamsFactory;
 import com.hanbit.javaconfigapp.factory.ListQuery;
 
@@ -28,26 +33,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+* @Create: 2017-03-16
+* @Auth: pakjkwan
+* @Story: 친구목록을 보여준다.
+ *@Nested Class:  ListDAO, MemberAdapter, ViewHoler
+* */
 public class MemberList extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Context context=MemberList.this;
-        LinearLayout ui=new LinearLayout(context);
-        ui.setLayoutParams(LayoutParamsFactory.createLayoutParams("mm"));
-        ListView listView=new ListView(context);
-        listView.setLayoutParams(LayoutParamsFactory.createLayoutParams("mm"));
-        ui.addView(listView);
-        setContentView(ui);
-
+        HashMap<?,?>components=init(context);
+        final ListView listView= (ListView) components.get("lvMemberList");
+        final HashMap<String,String>map=new HashMap<>();
         final ListDAO dao=new ListDAO(context);
-        IList service=new IList() {
+        final IList service=new IList() {
             @Override
             public List<?> list() {
                 return dao.list("select _id AS id, name, phone, age, address, salary from member;");
             }
         };
+        final DeleteDAO deleteDao=new DeleteDAO(context);
         final ArrayList<Map<String,String>> memberMap= (ArrayList<Map<String, String>>) service.list();
         listView.setAdapter(new MemberAdapter(memberMap,context));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -61,7 +69,36 @@ public class MemberList extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View v, int i, long l) {
-                return false;
+                HashMap<String,String>tmap=(HashMap)listView.getItemAtPosition(i);
+                map.clear();
+                map.put("id",tmap.get("id"));
+                new AlertDialog.Builder(context)
+                        .setTitle("==DELETE==")
+                        .setMessage("DELETE OK?")
+
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                IDelete service=new IDelete() {
+                                    @Override
+                                    public void delete() {
+
+                                        deleteDao.delete("DELETE FROM Member WHERE _id='"+map.get("id")+"';");
+                                        startActivity(new Intent(context, MemberList.class));
+                                    }
+                                };
+                                service.delete();
+                            }
+                        })
+                        .show();
+
+                return true;
             }
         });
     }
@@ -91,6 +128,15 @@ public class MemberList extends AppCompatActivity {
                 }
             }
             return members;
+        }
+    }
+    class DeleteDAO extends DeleteQuery {
+        public DeleteDAO(Context context) {
+            super(context);
+        }
+        @Override
+        public void delete(String sql) {
+            super.getDatabase().execSQL(sql);
         }
     }
     class MemberAdapter extends BaseAdapter {
@@ -154,5 +200,11 @@ public class MemberList extends AppCompatActivity {
     static class ViewHoler{
         ImageView profileImg;
         TextView tvName,tvPhone;
+    }
+    public HashMap<?,?>init(Context context){
+        Composite compo=new Composite(context,"MemberList");
+        compo.execute();
+        setContentView(compo.getFrame());
+        return compo.getComponents();
     }
 }
