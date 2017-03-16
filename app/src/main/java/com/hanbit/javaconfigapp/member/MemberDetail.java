@@ -19,7 +19,7 @@ import com.hanbit.javaconfigapp.factory.DetailQuery;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
+/**/
 public class MemberDetail extends AppCompatActivity {
 
     @Override
