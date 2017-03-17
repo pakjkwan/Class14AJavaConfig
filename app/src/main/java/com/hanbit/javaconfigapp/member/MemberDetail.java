@@ -7,14 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hanbit.javaconfigapp.action.IDetail;
 import com.hanbit.javaconfigapp.factory.Composite;
 import com.hanbit.javaconfigapp.factory.DetailQuery;
+import com.hanbit.javaconfigapp.message.MessageWrite;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +39,7 @@ public class MemberDetail extends AppCompatActivity {
                 return dao.detail("select _id AS id,name,phone,age,address,salary from member where _id='"+id+"';");
             }
         };
-        Map<String,String>rsMap= (Map<String,String>)service.detail();
+        final Map<String,String>rsMap= (Map<String,String>)service.detail();
         String temp="";
         Iterator<Map.Entry<String,String>>it=rsMap.entrySet().iterator();
         while (it.hasNext()){
@@ -44,62 +47,70 @@ public class MemberDetail extends AppCompatActivity {
            temp+=entry.getKey()+","+entry.getValue()+",";
         }
         final String spec=temp;
-        TextView tvIdContent= (TextView) components.get("tvIdContent");
-        tvIdContent.setText(rsMap.get("id"));
-        TextView tvNameContent= (TextView) components.get("tvNameContent");
-        tvNameContent.setText(rsMap.get("name"));
-        TextView tvPhoneContent= (TextView) components.get("tvPhoneContent");
-        tvPhoneContent.setText(rsMap.get("phone"));
-        TextView tvAgeContent= (TextView) components.get("tvAgeContent");
-        tvAgeContent.setText(rsMap.get("age"));
-        TextView tvAddressContent= (TextView) components.get("tvAddressContent");
-        tvAddressContent.setText(rsMap.get("address"));
-        TextView tvSalaryContent= (TextView) components.get("tvSalaryContent");
-        tvSalaryContent.setText(rsMap.get("salary"));
-        setContentView((LinearLayout) components.get("frame"));
-        Button btLocation= (Button) components.get("btLocation");
+        Log.d("넘어온 스펙: ",spec);
+        TextView tvIdContent = (TextView) components.get("tvDetailId");
+        tvIdContent.setText("ID : "+ rsMap.get("id"));
+        TextView tvNameContent = (TextView) components.get("tvDetailName");
+        tvNameContent.setText("NAME : "+ rsMap.get("name"));
+        TextView tvPhoneContent = (TextView) components.get("tvDetailPhone");
+        tvPhoneContent.setText("PHONE : " + rsMap.get("phone"));
+        TextView tvAgeContent = (TextView) components.get("tvDetailAge");
+        tvAgeContent.setText("AGE : "+ rsMap.get("age"));
+        TextView tvAddressContent = (TextView) components.get("tvDetailAddress");
+        tvAddressContent.setText("ADDRESS : " + rsMap.get("address"));
+        TextView tvSalaryContent = (TextView) components.get("tvDetailSalary");
+        tvSalaryContent.setText("SALARY : "+ rsMap.get("salary"));
+
+        setContentView((LinearLayout) components.get("llDetailFrame"));
+
+        Button btLocation = (Button) components.get("btnDetailMyLocation");
         btLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        Button btGoogleMap= (Button) components.get("btGoogleMap");
+        Button btGoogleMap = (Button) components.get("btnDetailGoogleMap");
         btGoogleMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        Button btGallery= (Button) components.get("btGallery");
-        btGoogleMap.setOnClickListener(new View.OnClickListener() {
+        Button btGallery = (Button) components.get("btnDetailAlbum");
+        btGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        Button btMusic= (Button) components.get("btMusic");
-        btGoogleMap.setOnClickListener(new View.OnClickListener() {
+        Button btMusic = (Button) components.get("btnDetailMusic");
+        btMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        Button btSMS= (Button) components.get("btSMS");
-        btGoogleMap.setOnClickListener(new View.OnClickListener() {
+        Button btSMS = (Button) components.get("btnDetailSMS");
+        btSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(context, MessageWrite.class);
+             //   String idAndPhone=rsMap.get("id")+","+rsMap.get("name")+","+rsMap.get("phone");
+                String idAndPhone="1,홍길동,010-1234-5678";
+                intent.putExtra("idAndPhone",idAndPhone);
+                Toast.makeText(context,idAndPhone,Toast.LENGTH_LONG).show();
+                startActivity(intent);
+            }
+        });
+        Button btMail = (Button) components.get("btnDetailMail");
+        btMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        Button btMail= (Button) components.get("btMail");
-        btGoogleMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        Button btDial= (Button) components.get("btDial");
+        Button btDial = (Button) components.get("btnDetailDial");
         btDial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,17 +120,14 @@ public class MemberDetail extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        Button btCall= (Button) components.get("btCall");
+        Button btCall = (Button) components.get("btnDetailCall");
         btCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel: "));
-                //intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel: " + map.get("phoneNum")));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+
             }
         });
-        Button btList= (Button) components.get("btList");
+        Button btList = (Button) components.get("btnDetailList");
         btList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,7 +135,7 @@ public class MemberDetail extends AppCompatActivity {
 
             }
         });
-        Button btUpdate= (Button) components.get("btUpdate");
+        Button btUpdate = (Button) components.get("btnDetailUpdate");
         btUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

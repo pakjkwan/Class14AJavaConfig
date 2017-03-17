@@ -56,6 +56,7 @@ public class Composite {
                 frame = (LinearLayout) map.get("llDetailFrame");
                 frame.addView((TextView) map.get("tvDetail"));
                 LinearLayout temp = (LinearLayout) map.get("llDetailSub");
+                temp.addView((TextView) map.get("tvDetailId"));
                 temp.addView((TextView) map.get("tvDetailName"));
                 temp.addView((TextView) map.get("tvDetailPhone"));
                 temp.addView((TextView) map.get("tvDetailAge"));
@@ -132,6 +133,7 @@ public class Composite {
                         break;
                     case "MemberDetail":
                         map.put("tvDetail", Complex.TextViewFactory.create(context, mw, "상세", 30, "center"));
+                        map.put("tvDetailId", Complex.TextViewFactory.create(context, mw, "ID:", 25, "left"));
                         map.put("tvDetailName", Complex.TextViewFactory.create(context, mw, "Name:", 25, "left"));
                         map.put("tvDetailPhone", Complex.TextViewFactory.create(context, mw, "Phone:", 25, "left"));
                         map.put("tvDetailAge", Complex.TextViewFactory.create(context, mw, "Age:", 25, "left"));
